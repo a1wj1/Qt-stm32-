@@ -1,0 +1,99 @@
+//              说明:
+//              ----------------------------------------------------------------
+//              GND   电源地
+//              VCC   接5V或3.3v电源
+//              SCL   接PA5（SCL）
+//              SDA   接PA7（SDA）
+//              ----------------------------------------------------------------
+
+#include "delay.h"
+#include "sys.h"
+#include "oled.h"
+#include "bmp.h"
+#include "timer.h"
+#include "usart.h"
+#include "stdio.h"
+char  a_ligh, a_temp, a_rh, b_co2, b_ligh, b_temp, b_rh,th, state;
+volatile u32 time; // ms 计时变量
+uint16_t  ReceiveData;
+void display1_a(char aco2,char aligh,char atemp,char arh)
+{
+    //A地点显示
+    OLED_ShowString (0, 0, "A:", 15);
+    OLED_ShowString (0, 1, "CO2:", 10);
+    OLED_ShowNum (30, 1, aco2, 6, 10);
+    OLED_ShowString (46, 1, "ppm", 10);
+    OLED_ShowString (72, 1, "L:", 10);
+    OLED_ShowNum (84, 1, aligh,6, 10);
+    OLED_ShowString (110, 1, "lx", 10);
+    OLED_ShowString (0, 2, "T:", 10);
+    OLED_ShowNum (15, 2, atemp, 2, 10);
+    OLED_ShowString (28, 2, "C", 10);
+    OLED_ShowString (50, 2, "RH:", 10);
+    OLED_ShowNum (72, 2, arh, 2, 10);
+    OLED_ShowString (96, 2, "%", 10);
+    OLED_ShowString (0, 3, "----------------", 1);
+}
+void display1_b(char bco2,char bligh,char btemp,char brh)
+{
+    //B地点显示
+    OLED_ShowString (0, 4, "B:", 15);
+    OLED_ShowString (0, 5, "CO2:", 10);
+    OLED_ShowNum (30, 5, bco2,6, 10);
+    OLED_ShowString (46, 5, "ppm", 10);
+    OLED_ShowString (72, 5, "L:", 10);
+    OLED_ShowNum (84, 5, bligh,6, 10);
+    OLED_ShowString (110, 5, "lx", 10);
+    OLED_ShowString (0, 6, "T:", 10);
+    OLED_ShowNum (15, 6, btemp, 2, 10);
+    OLED_ShowString (28, 6, "C", 10);
+    OLED_ShowString (50, 6, "RH:", 10);
+    OLED_ShowNum (72, 6, brh, 2, 10);
+    OLED_ShowString (96, 6, "%", 10);
+    OLED_ShowString (0, 7, "----------------", 1);
+}
+void display2(char ths,char states)
+{
+    OLED_ShowString (0, 1, "Th(RH):", 15);
+    OLED_ShowNum (30, 1, ths, 2, 15);
+    OLED_ShowString (46, 1, "%", 15);
+    OLED_ShowString (0, 2, "Mach:", 15);
+    OLED_ShowNum (15, 2, states, 2, 15);
+    OLED_ShowString (0, 3, "----------------", 1);
+}
+void display()//显示总函数
+{
+        display1_a(a_co2, a_ligh, a_temp, a_rh);
+
+        delay_ms(5000);
+        OLED_Clear();
+			  display1_b(b_co2, b_ligh, b_temp, b_rh);
+        delay_ms(5000);
+			  OLED_Clear();
+        display2(th, state);
+	        delay_ms(5000);
+			  OLED_Clear();
+}
+int main (void)
+{
+    delay_init();        //延时函数初始化
+    SystemInit(); /* 配置系统时钟为 72M */
+    TIM2_NVIC_Configuration(); /* TIM2 定时配置 */
+    TIM2_Configuration();
+    // START_TIME;	 /* TIM2 开始计时 */
+    OLED_Init();      //初始化OLED
+    OLED_Clear();
+	  USART1_init(115200);
+	  USART2_init(115200);
+    while (1)
+    {  	
+
+//			  USART_SendData(USART1, 0x44);    //测试串口发送数据
+//				printf("printf test\r\n");
+}
+
+}
+
+
+
+
